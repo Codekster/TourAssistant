@@ -1,0 +1,70 @@
+# Python
+*.py[cod]
+*$py.class
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/staticfiles
+/media
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Private backup files (NEVER COMMIT)
+CREDENTIALS_BACKUP.md
+*BACKUP*.md
+secrets.txt
+
+# Azure Functions
+local.settings.json
+__blobstorage__/
+__queuestorage__/
+__azurite_db*__.json
+.python_packages/
+
+# ChromaDB
+chroma_langchain_db/
+*.sqlite3
+chroma.sqlite3
+
+# Backup files
+*.bak
+*.backup
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Research/Documentation (optional - remove if you want to commit these)
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+
+# Large data files (optional - commit if needed)
+# data/

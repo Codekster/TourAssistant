@@ -1,0 +1,14 @@
+POST http://localhost:7071/api/SendBookingEmail
+Content-Type: application/json
+
+{
+    "booking_data": {
+        "ticket_id": "TKT123",
+        "name": "Abhishek",
+        "attraction": "Bhojpur Temple",
+        "visit_date": "2024-01-01",
+        "num_tickets": 2,
+        "total_price": 500
+    },
+    "recipient_email": "hbfabhi86@gmail.com"
+}

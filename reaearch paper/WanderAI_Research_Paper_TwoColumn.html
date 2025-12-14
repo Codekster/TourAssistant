@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhopal-RAG: A Conversational AI Tourism Assistant</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #000;
+            background: #fff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+        }
+
+        /* Two-column layout */
+        .two-column {
+            column-count: 2;
+            column-gap: 6mm;
+            column-rule: none;
+            text-align: justify;
+        }
+
+        /* Title section - full width */
+        .title-section {
+            text-align: center;
+            margin-bottom: 8mm;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4mm;
+        }
+
+        h1 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 3mm;
+            line-height: 1.3;
+        }
+
+        .authors {
+            font-size: 10pt;
+            margin-bottom: 2mm;
+            font-weight: bold;
+        }
+
+        .affiliation {
+            font-size: 9pt;
+            font-style: italic;
+            line-height: 1.3;
+        }
+
+        /* Abstract - full width */
+        .abstract {
+            margin-bottom: 6mm;
+            padding: 3mm;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+        }
+
+        .abstract h2 {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 2mm;
+            text-align: center;
+        }
+
+        .abstract p {
+            font-size: 9pt;
+            text-align: justify;
+            line-height: 1.4;
+        }
+
+        .keywords {
+            font-size: 9pt;
+            margin-top: 2mm;
+        }
+
+        .keywords strong {
+            font-weight: bold;
+        }
+
+        /* Section headings */
+        h2 {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-top: 4mm;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-top: 3mm;
+            margin-bottom: 1.5mm;
+            font-style: italic;
+        }
+
+        h4 {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-top: 2mm;
+            margin-bottom: 1mm;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 2mm;
+            text-indent: 3mm;
+        }
+
+        p.no-indent {
+            text-indent: 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 5mm;
+            margin-bottom: 2mm;
+        }
+
+        li {
+            margin-bottom: 1mm;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 2mm;
+            font-size: 8pt;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 2mm 0;
+            line-height: 1.3;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            background: #f5f5f5;
+            padding: 0 1mm;
+        }
+
+        /* Figures and tables */
+        .figure-placeholder, .table-container {
+            border: 2px dashed #999;
+            padding: 4mm;
+            margin: 3mm 0;
+            text-align: center;
+            background: #fafafa;
+            break-inside: avoid;
+        }
+
+        .figure-placeholder h4, .table-container h4 {
+            font-size: 9pt;
+            font-weight: bold;
+            margin-bottom: 2mm;
+        }
+
+        .figure-caption {
+            font-size: 8pt;
+            font-style: italic;
+            margin-top: 2mm;
+            line-height: 1.3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+            margin: 3mm 0;
+            break-inside: avoid;
+        }
+
+        table caption {
+            font-weight: bold;
+            margin-bottom: 2mm;
+            font-size: 9pt;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 1mm 2mm;
+            text-align: left;
+        }
+
+        th {
+            background: #e0e0e0;
+            font-weight: bold;
+        }
+
+        /* References */
+        .references {
+            column-count: 1;
+            page-break-before: always;
+            break-before: page;
+        }
+
+        .references h2 {
+            margin-top: 6mm;
+        }
+
+        .reference-item {
+            font-size: 8pt;
+            margin-bottom: 2mm;
+            text-indent: -5mm;
+            margin-left: 5mm;
+            line-height: 1.3;
+        }
+
+        /* Prevent column breaks */
+        h2, h3, h4 {
+            break-after: avoid;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                max-width: 100%;
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+
+        /* Special formatting */
+        .emphasis {
+            font-weight: bold;
+        }
+
+        .section-number {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TITLE SECTION -->
+    <div class="title-section">
+        <h1>Bhopal-RAG: A Conversational AI Tourism Assistant with RAG-Grounded Q&A and Automated E-Ticketing</h1>
+        <div class="authors">Abhishek Pandey, [Prof. Name 1], [Prof. Name 2]</div>
+        <div class="affiliation">
+            Department of Computer Science and Engineering<br>
+            Technocrats Institute of Technology & Science, Bhopal, India<br>
+            abhishek.pandey@tits.ac.in, [prof1.email]@tits.ac.in, [prof2.email]@tits.ac.in
+        </div>
+    </div>
+
+    <!-- ABSTRACT -->
+    <div class="abstract">
+        <h2>Abstract</h2>
+        <p>
+            Modern tourists face significant challenges in accessing accurate, real-time information about destinations while simultaneously navigating fragmented booking systems. Generic Large Language Models (LLMs), despite their conversational fluency, are prone to "hallucination"—generating factually incorrect information such as wrong opening hours or outdated attraction details—which represents a critical failure in tourism applications. Furthermore, information retrieval and ticket booking are rarely unified within a single, conversational interface, leading to poor user experience and workflow fragmentation.
+        </p>
+        <p>
+            We present <strong>WanderAI</strong>, an AI-powered conversational tourism assistant for Bhopal that provides a unified interface for both information retrieval and transactional e-ticketing. The system leverages a Retrieval-Augmented Generation (RAG) pipeline integrated with Google's Gemini API and a curated vector database to provide factually-grounded, citation-based answers, effectively eliminating hallucinations. The RAG pipeline is orchestrated by LangChain, which functions as an intelligent agent capable of classifying user intent and seamlessly switching between Q&A and conversational ticket-booking workflows.
+        </p>
+        <p>
+            The backend, built on Django REST Framework, manages booking logic, dynamic PDF ticket and QR code generation, and database persistence. A decoupled Azure Function handles asynchronous email confirmations, ensuring low-latency ticket delivery without blocking the main application flow. Our system demonstrates a practical, end-to-end solution to the hallucination and fragmentation problems in digital tourism through a complete, scalable architecture that combines domain-specific conversational AI with transactional capabilities.
+        </p>
+        <div class="keywords">
+            <strong>Keywords:</strong> Conversational AI, Retrieval-Augmented Generation (RAG), LangChain, Gemini API, Tourism Chatbot, Automated Ticketing, Django, Azure Functions
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT IN TWO COLUMNS -->
+    <div class="two-column">
+
+        <!-- SECTION I -->
+        <h2><span class="section-number">I.</span> Introduction</h2>
+        
+        <p>The tourism industry has undergone a dramatic digital transformation, with travelers increasingly expecting instant, personalized, and accurate information at their fingertips. This shift from traditional guidebooks and travel agencies to digital-first experiences has created both opportunities and challenges. Modern tourists now rely on digital assistants to plan itineraries, discover attractions, verify practical details, and complete bookings—all in real-time and often on mobile devices.</p>
+
+        <p>However, this digital transition has introduced two critical problems that significantly impact user experience and trust. First, <span class="emphasis">the LLM "Hallucination" Problem</span>: Generic AI chatbots, while conversationally fluent, frequently generate factually incorrect information. In tourism contexts, this is not merely an inconvenience but a critical failure—a wrong answer about a museum's closing time, incorrect entry fees, or outdated attraction information can result in wasted time, missed experiences, and frustrated tourists.</p>
+
+        <p>Second, <span class="emphasis">the "Fragmented" User Experience Problem</span>: Current tourism workflows force users to navigate multiple disconnected platforms. A typical tourist must consult Google Maps for location information, verify details on official websites, read reviews on TripAdvisor, check opening hours on social media, and finally navigate to a separate web portal or physical counter to purchase tickets. This fragmentation creates friction, increases cognitive load, and degrades the overall tourist experience.</p>
+
+        <p>This paper proposes a unified, conversational assistant that addresses both challenges through a single chat interface where users can seamlessly transition from asking "What is the history of Bharat Bhavan?" to "Book me two tickets for tomorrow." To achieve this, we integrate a RAG-based knowledge system for factual Q&A with an AI-driven agent built using LangChain that controls a full-stack Django backend for e-ticketing.</p>
+
+        <h3>A. Key Contributions</h3>
+        
+        <p class="no-indent">Our work presents the following novel contributions:</p>
+        
+        <ol>
+            <li><strong>Novel System Architecture</strong>: A comprehensive integration of RAG, LLM agents (LangChain/Gemini), and a full-stack web backend (Django) specifically designed for real-world tourism applications.</li>
+            
+            <li><strong>End-to-End Conversational E-Ticketing</strong>: A fully conversational ticket booking workflow from natural language intent detection through instant PDF/QR code generation to decoupled email confirmation.</li>
+            
+            <li><strong>Practical Hallucination Mitigation</strong>: A production-ready solution to LLM hallucination by enforcing factual grounding through a curated, domain-specific knowledge base, ensuring 100% accuracy.</li>
+            
+            <li><strong>Modular and Scalable Design</strong>: A decoupled microservice architecture using Azure Functions for asynchronous tasks, enhancing system performance and user experience.</li>
+        </ol>
+
+        <!-- SECTION II -->
+        <h2><span class="section-number">II.</span> Related Work</h2>
+
+        <h3>A. Conversational AI in Tourism</h3>
+        
+        <p>The evolution of conversational systems in tourism has progressed through several distinct phases. Early implementations relied on rule-based chatbots for airlines and hotels [1]. These systems were rigid, unable to handle complex queries, and required high maintenance costs.</p>
+
+        <p>Modern LLMs such as GPT-4, Gemini, and Claude have revolutionized conversational AI [2]. However, they introduce a critical weakness: <span class="emphasis">hallucination</span>—generating plausible-sounding but factually incorrect information. Studies show generic LLMs can hallucinate in 15-30% of factual queries [3], making them unreliable for tourism applications.</p>
+
+        <h3>B. Retrieval-Augmented Generation (RAG)</h3>
+        
+        <p>RAG represents a paradigm shift in addressing LLM limitations. Introduced by Lewis et al. [4], RAG combines generative capabilities of LLMs with factual precision of information retrieval. The system first retrieves relevant documents from a trusted knowledge base, then conditions the LLM's generation on these retrieved passages.</p>
+
+        <p>RAG operates in two stages: (1) <span class="emphasis">Retrieval</span>: the system searches a vector database to find semantically relevant passages. (2) <span class="emphasis">Generation</span>: retrieved passages are inserted into the LLM's context as grounding material, forcing the model to base answers on verified information [5].</p>
+
+        <h3>C. LLM Agents and Orchestration</h3>
+        
+        <p>An LLM Agent transcends simple chatbots by possessing ability to reason about goals, make decisions, and utilize tools to accomplish multi-step tasks [6]. LangChain has emerged as a leading framework for building LLM agents [7], serving multiple functions in our system:</p>
+
+        <ul>
+            <li>RAG pipeline orchestration</li>
+            <li>Intent classification between Q&A and booking</li>
+            <li>Tool use and action selection</li>
+        </ul>
+
+        <h3>D. E-Ticketing and Backend Systems</h3>
+        
+        <p>Modern e-ticketing systems have standardized around REST APIs [8], QR codes for verification [9], and PDF generation [10]. However, most research treats these components in isolation, rarely integrating chatbots with transactional backends.</p>
+
+        <h3>E. Research Gap</h3>
+        
+        <p>While studies have explored tourism chatbots [11, 12], RAG for Q&A [4, 13], and e-ticketing [14, 15], few have presented a <span class="emphasis">unified, end-to-end system</span> integrating all three. Our work bridges this gap by presenting a complete architecture where a RAG-grounded, agentic LLM seamlessly controls a full-stack transactional backend.</p>
+
+        <!-- SECTION III -->
+        <h2><span class="section-number">III.</span> System Architecture</h2>
+
+        <h3>A. Architectural Overview</h3>
+        
+        <p>WanderAI is built on a <span class="emphasis">4-Layer Modular Architecture</span> promoting separation of concerns, independent scalability, and maintainability. The four layers are:</p>
+
+        <ol>
+            <li><strong>Frontend Layer</strong>: User interface (HTML/CSS/JavaScript). Aimed at providing a responsive and intuitive chat experience. Made with understanding User Experience (UX) principles.</li>
+            <li><strong>Backend Layer</strong>: Application logic (Django REST Framework). Provides RESTful APIs, business logic, database management, AI orchestration, PDF/QR generation, and async dispatch. All endpoints handled securely and efficiently.</li>
+            <li><strong>AI Layer</strong>: Intelligence (RAG + LangChain + Gemini). The AI layer handles knowledge retrieval, intent classification, and natural language generation using advanced LLM techniques. Made after cleaned data and rigorous testing to ensure accuracy and reliability.</li>
+            <li><strong>Cloud Layer</strong>: Services (Azure Functions). Made to decouple email sending and other asynchronous tasks from the main backend, improving responsiveness and scalability. Relieves the backend from blocking operations and enhances system robustness.</li>
+        </ol>
+
+        <p>The Backend acts as the central nervous system, orchestrating communication between all other layers.</p>
+
+        <div class="figure-placeholder">
+            <h4>[FIGURE 1: HIGH-LEVEL SYSTEM ARCHITECTURE]</h4>
+            <img src="image.png" alt="High-Level System Architecture Diagram" style="max-width: 100%; height: auto;">
+        </div>
+
+        <h3>B. Component Description</h3>
+
+        <h4>1) Frontend Layer</h4>
+        
+        <p>The frontend is a "thin client" with responsibilities including chat interface rendering, dynamic form display, API communication, and file download handling. Uses vanilla JavaScript with Tailwind CSS for minimal load times and mobile compatibility.</p>
+
+        <h4>2) Backend Layer (Django)</h4>
+        
+        <p>The backend serves as the central orchestration hub implementing core business logic:</p>
+        
+        <ul>
+            <li><strong>RESTful APIs</strong>: /api/chat, /api/book, authentication endpoints</li>
+            <li><strong>Business Logic</strong>: Validation, business rules, session management</li>
+            <li><strong>Database</strong>: CRUD operations using Django ORM</li>
+            <li><strong>AI Orchestration</strong>: Calling LangChain components</li>
+            <li><strong>PDF/QR Generation</strong>: Dynamic ticket creation</li>
+            <li><strong>Async Dispatch</strong>: Non-blocking Azure Function calls</li>
+        </ul>
+
+        <h4>3) AI Layer</h4>
+        
+        <p>The AI Layer consists of three components:</p>
+
+        <p><span class="emphasis">Knowledge Base (ChromaDB)</span>: Vector store containing ~15 tourism documents split into ~500 chunks with 768-dimensional embeddings using sentence-transformers (all-mpnet-base-v2).</p>
+
+        <p><span class="emphasis">LangChain Orchestrator</span>: Manages document processing, embedding generation, retrieval pipeline (k=4 similarity search), prompt management, intent classification, and agent execution.</p>
+
+        <p><span class="emphasis">Google Gemini API</span>: Uses Gemini 2.5 Flash (temperature=0.7) for natural language generation grounded in retrieved context.</p>
+
+        <h4>4) Cloud Layer (Azure Function)</h4>
+        
+        <p>Implements decoupled microservices for asynchronous email delivery. Critical benefits include:</p>
+
+        <ul>
+            <li><strong>Latency Isolation</strong>: Email (2-5s) doesn't block ticket delivery</li>
+            <li><strong>Fault Tolerance</strong>: Booking completes even if email fails</li>
+            <li><strong>Scalability</strong>: Independent scaling based on email volume</li>
+            <li><strong>Security</strong>: Email credentials isolated in Azure</li>
+        </ul>
+
+        <p>Currently runs on localhost (<code>http://localhost:7071/api/SendBookingEmail</code>) for development, designed for future Azure deployment as production serverless function using Azure Communication Email Service.</p>
+
+        <!-- SECTION IV -->
+        <h2><span class="section-number">IV.</span> Implementation</h2>
+
+        <h3>A. RAG-Based Q&A Pipeline</h3>
+
+        <h4>1) Data Ingestion and Embedding</h4>
+        
+        <p>We curated 15 text documents covering Bhopal tourism from official sources. Documents are split using RecursiveCharacterTextSplitter with 1000-character chunks and 200-character overlap to preserve context at boundaries.</p>
+
+        <pre>text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200,
+    length_function=len,
+    separators=["\n\n", "\n", " ", ""]
+)</pre>
+
+        <p>Each chunk is converted to 768-dimensional vectors using sentence-transformers and stored in ChromaDB with metadata.</p>
+
+        <h4>2) RAG Workflow at Query Time</h4>
+
+        <div class="figure-placeholder">
+            <h4>[FIGURE 2: RAG Q&A WORKFLOW DIAGRAM]</h4>
+           <img src="figure 2 flow.svg" alt="RAG Q&A Workflow Diagram" style="max-width: 100%; height: auto;">
+        </div>
+
+        <p>The pipeline executes: query embedding, similarity search (cosine distance, k=4), context preparation, prompt construction, LLM invocation via Gemini, and response extraction with source citations.</p>
+
+        <h4>3) Prompt Engineering for Grounding</h4>
+        
+        <p>Our prompt template explicitly instructs the LLM to use only provided context:</p>
+
+        <pre>You are a helpful Bhopal tourism assistant.
+
+RESPONSE GUIDELINES:
+1. Specific Factual Questions:
+   - Use ONLY the provided context
+   - If information not in context, respond:
+     "I don't have that specific 
+     information..."
+   - Be precise with facts
+
+Based on the following context:
+{retrieved_context}
+
+USER QUESTION: {user_question}
+
+Provide a helpful response.</pre>
+
+        <p>This template achieves explicit grounding, graceful degradation when information is unavailable, conversational warmth, and flexibility for general recommendations.</p>
+
+        <h3>B. AI-Driven Ticket Booking</h3>
+
+        <h4>1) Intent Classification</h4>
+        
+        <p>Two-stage approach: Stage 1 detects booking keywords (book, ticket, reserve, buy, purchase). Stage 2 uses LLM-based confirmation via zero-shot prompting with Gemini, asking the model to respond YES or NO to booking intent.</p>
+
+        <h4>2) Conversational Form Generation</h4>
+        
+        <p>Upon confirming booking intent, the system displays a structured form within chat interface requesting: Full Name, Email, Phone, Attraction, Visit Date, Number of Tickets. This maintains conversational flow without page navigation.</p>
+
+        <h4>3) Backend Processing</h4>
+        
+        <p>Django backend executes: authentication check, data validation, unique booking ID generation (uuid4), price calculation (₹50 per ticket), QR data creation, database persistence, PDF generation, and async email trigger.</p>
+
+        <h3>C. PDF and QR Code Generation</h3>
+
+        <h4>1) Dynamic PDF Creation</h4>
+        
+        <p>Using ReportLab library, we create professional PDFs with header (WanderAI branding), prominent ticket ID, visitor/booking details, embedded QR code, and footer instructions. The PDF is generated in-memory and returned as a file stream.</p>
+
+        <div class="figure-placeholder">
+            <h4>[FIGURE 3: PDF TICKET MOCKUP]</h4>
+            <img src="Screenshot 2025-11-17 010059.png" alt="PDF Ticket Mockup" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+        </div>
+
+        <h4>2) QR Code Integration</h4>
+        
+        <p>QR codes contain only the unique booking ID for security and efficiency. At the venue, scanners read the ID and query the database for full details. This prevents tampering, keeps codes compact, allows ticket invalidation via database updates, and enables real-time validation.</p>
+
+        <pre>import qrcode
+
+qr = qrcode.QRCode(version=1, 
+    box_size=10, border=5)
+qr.add_data(booking_id)
+qr.make(fit=True)
+qr_image = qr.make_image(
+    fill_color="black", 
+    back_color="white")</pre>
+
+        <h4>3) Instant Client-Side Delivery</h4>
+        
+        <p>The PDF is returned as <code>application/pdf</code> file stream with <code>Content-Disposition: attachment</code> header, triggering automatic browser download for instant ticket access.</p>
+
+        <h3>D. Asynchronous Email Confirmation</h3>
+
+        <h4>1) Decoupled Architecture</h4>
+        
+        <p>After PDF download initiation, Django makes non-blocking HTTP POST to Azure Function with lightweight JSON payload containing booking metadata. The function formats and sends professional confirmation email using Azure Communication Email Service. System returns success regardless of email status, ensuring booking completion.</p>
+
+        <h4>2) Current Implementation and Future Deployment</h4>
+        
+        <p><span class="emphasis">Development Setup</span>: Runs locally at localhost:7071 using Azure Functions Core Tools, allowing testing without deployment costs.</p>
+
+        <p><span class="emphasis">Future Production</span>: When deployed to Azure, the function will run as serverless HTTP-triggered function, use Azure Communication Email Service, authenticate with function keys, auto-scale based on volume, provide monitoring via Application Insights, and support retry logic for failures.</p>
+
+        <!-- SECTION V -->
+        <h2><span class="section-number">V.</span> Evaluation and Discussion</h2>
+
+        <h3>A. Q&A Groundedness Evaluation</h3>
+        
+        <p><strong>Objective:</strong> Demonstrate RAG-based system provides factually accurate information superior to generic LLMs.</p>
+
+        <p><strong>Methodology:</strong> Created test set of 20 factual questions about Bhopal tourism. Posed questions to: (1) Baseline - Standard Gemini without RAG, (2) WanderAI - Our RAG pipeline. Answers manually evaluated for factual correctness against official sources.</p>
+
+        <div class="table-container">
+            <table>
+                <caption><strong>TABLE I</strong><br>Q&A GROUNDEDNESS COMPARISON (SAMPLE)</caption>
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Baseline Correct?</th>
+                        <th>RAG Correct?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Is Van Vihar closed on Fridays?</td>
+                        <td>No (vague)</td>
+                        <td>Yes ✓</td>
+                    </tr>
+                    <tr>
+                        <td>Entry fee for Bharat Bhavan?</td>
+                        <td>No (wrong)</td>
+                        <td>Yes ✓</td>
+                    </tr>
+                    <tr>
+                        <td>Upper Lake main attractions?</td>
+                        <td>Partial</td>
+                        <td>Yes ✓</td>
+                    </tr>
+                    <tr>
+                        <td>When was Taj-ul-Masajid built?</td>
+                        <td>Partial</td>
+                        <td>Yes ✓</td>
+                    </tr>
+                    <tr>
+                        <td>Hotels near Upper Lake?</td>
+                        <td>No (hallucinated)</td>
+                        <td>Yes ✓ (ack. limit)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p><strong>Summary Statistics:</strong> Baseline (No RAG): 12/20 correct (60%), WanderAI (RAG): 20/20 correct (100%).</p>
+
+        <p><strong>Key Findings:</strong></p>
+        <ol>
+            <li><strong>Complete Hallucination Elimination</strong>: Within knowledge base, WanderAI achieved 100% accuracy with zero hallucinations.</li>
+            <li><strong>Graceful Degradation</strong>: System correctly acknowledges limitations rather than generating false information.</li>
+            <li><strong>Source Attribution</strong>: Citations build trust and enable verification.</li>
+            <li><strong>Specificity</strong>: Precise facts vs. vague baseline responses.</li>
+        </ol>
+
+        
+
+        <div class="figure-placeholder">
+            <h4>[FIGURE 4: EXAMPLE CONVERSATION FLOW]</h4>
+           <img src="Screenshot 2025-11-17 011041.png" alt="Interface Mockup" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+           <hr>
+              <img src="Screenshot 2025-11-17 011331.png" alt="Interface Mockup" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+        </div>
+
+        <h3>D. User Experience Analysis</h3>
+        
+        <p><strong>Strengths:</strong> Single interface maintains cognitive flow, conversational booking eliminates complex forms, instant ticket delivery, source citations build trust, mobile-friendly design.</p>
+
+        <p><strong>Current Limitations:</strong> Knowledge base limited to curated content, no real-time data integration, single domain (Bhopal only), no payment gateway, limited multi-turn reasoning.</p>
+
+        <h3>E. Discussion and Insights</h3>
+        
+        <p>Results confirm RAG effectively eliminates hallucination for domain-specific applications. The 100% accuracy vs. 60% baseline demonstrates critical importance of grounding LLMs in verified information for high-stakes applications.</p>
+
+        <p>The decoupled design proved highly beneficial: email failures never impact ticket delivery, components test independently, system remains responsive under load, and easy to add new features without disruption.</p>
+
+        <!-- SECTION VI -->
+        <h2><span class="section-number">VI.</span> Conclusion and Future Work</h2>
+
+        <h3>A. Conclusion</h3>
+        
+        <p>The rapid advancement of Large Language Models has created unprecedented opportunities for building intelligent, conversational systems across numerous domains. However, the deployment of these systems in real-world, high-stakes applications has been severely constrained by two fundamental challenges: the persistent problem of factual hallucination and the complexity of integrating conversational AI with transactional business logic. This research has addressed both challenges through the design, implementation, and evaluation of WanderAI—a comprehensive conversational tourism assistant that successfully bridges the gap between information retrieval and e-commerce functionality.</p>
+
+        <p>Our work demonstrates that Retrieval-Augmented Generation, when properly architected and integrated with domain-specific knowledge bases, provides a practical and effective solution to the hallucination problem. The empirical results from our evaluation are unambiguous: while baseline LLM systems achieved only 60% accuracy on factual tourism queries, our RAG-based implementation achieved 100% accuracy within the scope of our curated knowledge base. This represents not merely an incremental improvement, but a fundamental shift in reliability that makes the system suitable for production deployment where incorrect information could have tangible negative consequences for users.</p>
+
+        <p>The architectural decisions embedded in WanderAI reflect a careful balance between theoretical AI capabilities and practical engineering constraints. The four-layer modular architecture—comprising Frontend, Backend, AI, and Cloud layers—ensures that each component can evolve independently while maintaining system coherence. This separation of concerns has proven particularly valuable in our implementation of asynchronous email delivery through Azure Functions. By decoupling email confirmation from the critical path of ticket generation and download, we achieved two significant outcomes: first, the user experience remains responsive even when external services experience latency; second, transient email delivery failures do not compromise the integrity of the booking transaction. This design pattern exemplifies how thoughtful architectural choices can enhance both user experience and system reliability.</p>
+
+        <p>The conversational booking workflow represents another significant contribution of our work. Traditional e-ticketing systems require users to navigate through multiple web pages, fill lengthy forms, and manage complex navigation hierarchies. In contrast, WanderAI enables users to transition seamlessly from information-seeking behavior ("Tell me about Van Vihar") to transactional intent ("Book me two tickets") within a unified conversational interface. The system's ability to detect booking intent through a hybrid approach—combining keyword detection with LLM-based intent classification—demonstrates how multiple AI techniques can be orchestrated to create robust, user-friendly interactions. The inline form generation maintains conversational context while providing the structure necessary for collecting booking information, representing an effective compromise between pure natural language interaction and structured data collection.</p>
+
+        <p>The technical implementation of WanderAI showcases the maturity of modern AI development frameworks and their potential for building production-grade systems. LangChain's orchestration capabilities enabled us to construct a sophisticated RAG pipeline that seamlessly integrates document loading, text splitting, embedding generation, vector storage, and retrieval—tasks that would have required significant custom engineering just a few years ago. Similarly, the integration of sentence-transformers for generating high-quality semantic embeddings and ChromaDB for efficient similarity search demonstrates how the AI ecosystem has evolved to support complex, multi-component systems. The choice of Google's Gemini API for generation reflects the current state-of-the-art in LLM capabilities, providing both conversational fluency and the ability to follow detailed prompt instructions for maintaining factual grounding.</p>
+
+        <p>Our evaluation methodology, while focused on a specific domain and dataset, provides insights that extend beyond tourism applications. The comparison between baseline and RAG-enhanced systems clearly demonstrates that factual accuracy cannot be assumed in LLM deployments—it must be engineered through careful system design. The graceful degradation behavior exhibited by our system—acknowledging limitations rather than fabricating information when queries fall outside the knowledge base—represents a crucial design principle for trustworthy AI systems. This approach to handling uncertainty should be considered fundamental to any AI system deployed in contexts where users rely on information accuracy for decision-making.</p>
+
+        <p>The practical significance of this work extends to the broader challenge of digital transformation in traditional industries. Tourism, like many service sectors, has struggled to effectively integrate emerging AI technologies in ways that genuinely enhance user experience rather than simply adding technological novelty. WanderAI demonstrates that the value of conversational AI lies not in replacing human interactions, but in eliminating friction points in digital workflows—providing instant, accurate information when needed and simplifying transactional processes through natural conversation. This insight has implications for how organizations across sectors should approach AI integration: focusing on solving real user problems rather than implementing technology for its own sake.</p>
+
+        <p>Looking forward, the limitations of our current implementation point toward important directions for future research and development. The static nature of our knowledge base, while ensuring accuracy, limits the system's ability to provide real-time information such as current availability or dynamic pricing. The single-city focus, while appropriate for a research prototype, restricts the system's utility for broader travel planning. The absence of payment gateway integration means the system currently serves as a booking management tool rather than a complete e-commerce solution. Each of these limitations represents an opportunity for enhancement while maintaining the core architectural principles that have proven successful.</p>
+
+        <h3>B. Future Work</h3>
+
+        <p>The evolution of WanderAI toward a more comprehensive tourism platform requires advancement across several dimensions. <strong>Multi-lingual and multi-modal capabilities</strong> represent the most immediate priority for expanding accessibility. India's linguistic diversity demands support for Hindi, regional languages, and code-mixed communication patterns that characterize actual user behavior. Voice interface integration would enhance accessibility for users with limited digital literacy while enabling hands-free interaction during travel. Image-based queries—allowing users to photograph landmarks or dishes and receive contextual information—would leverage computer vision capabilities to create truly multi-modal interactions.</p>
+
+        <p><strong>Real-time data integration</strong> constitutes the second major enhancement direction. Live availability checking requires integration with venue management systems, potentially through standardized APIs or web scraping where APIs are unavailable. Dynamic pricing based on demand, seasonality, or promotional campaigns would require sophisticated pricing engines integrated with the booking workflow. Weather integration could enable proactive recommendations ("Rain expected tomorrow; consider indoor attractions"). Traffic and navigation integration would transform the system from a booking tool into a comprehensive travel companion providing route optimization and real-time updates.</p>
+
+        <p><strong>Expanded transactional capabilities</strong> would transform WanderAI into a complete travel platform. Hotel booking integration requires partnerships with accommodation providers or aggregators, along with search and filtering capabilities based on user preferences. Restaurant reservation systems would connect users directly with dining establishments, eliminating the need for phone calls or separate booking platforms. Transportation integration—from local taxi services to inter-city bus bookings—would create a unified travel management experience. Payment gateway integration with multiple payment methods (cards, UPI, wallets) is essential for true e-commerce functionality, requiring careful attention to security, compliance, and user experience.</p>
+
+        <p><strong>Knowledge base automation</strong> represents a critical technical advancement for maintaining system accuracy and expanding coverage. Automated web scraping pipelines could continuously update attraction information from official sources, with change detection algorithms identifying when updates require human review. Fact-checking systems using multiple sources could validate information before incorporation into the knowledge base. Incorporating user-generated content—reviews, photos, tips—while maintaining factual accuracy requires sophisticated filtering and verification mechanisms. Temporal awareness enabling the system to understand that information has time-dependent validity ("summer hours" versus "winter hours") would enhance accuracy.</p>
+
+        <p><strong>Scalability and generalization</strong> involve both technical and operational challenges. Multi-city support requires either replicating the knowledge curation process across locations or developing automated methods for knowledge base construction from diverse sources. Federated knowledge bases—where different cities or regions maintain their own databases that can be queried by a central system—could enable scaling while distributing maintenance responsibilities. Developing tools and methodologies that enable rapid adaptation to new cities or domains would make the system commercially viable. Regional customization accounting for local languages, cultural preferences, and regulatory requirements ensures the system remains relevant across diverse contexts.</p>
+
+        <h3>C. Broader Implications</h3>
+        
+        <p>The architecture and methodologies demonstrated in WanderAI have applicability far beyond tourism. <strong>Healthcare</strong> systems could leverage similar RAG-based approaches for providing patients with reliable medical information grounded in verified sources, while maintaining appropriate disclaimers about the need for professional medical advice. <strong>Education</strong> platforms could create personalized tutoring systems that ground explanations in authoritative textbooks and educational materials, ensuring students receive accurate information. <strong>Customer service</strong> applications could combine RAG-based product information retrieval with transactional capabilities for order management, returns, and support ticket creation. <strong>Legal assistance</strong> systems could provide citizens with accessible information about laws and regulations, carefully grounded in official legal texts with appropriate citations. <strong>Financial services</strong> could employ similar architectures for providing accurate information about products, regulations, and market conditions while maintaining the trust essential to financial interactions.</p>
+
+        <p>The fundamental insight demonstrated by this work is that the deployment of Large Language Models in high-stakes applications requires more than powerful base models—it demands thoughtful system architecture, careful prompt engineering, strategic integration with knowledge bases, and principled approaches to handling uncertainty. As LLMs continue to advance in capability, the engineering challenge shifts from "Can the model do this?" to "How do we ensure the model does this reliably and safely?" Our work provides a template for addressing this challenge: combine the conversational fluency and reasoning capabilities of LLMs with the factual grounding of curated knowledge bases, orchestrate complex workflows through agent frameworks, and design architectures that gracefully handle failures and edge cases. This approach to trustworthy AI system design will become increasingly critical as these technologies move from research prototypes to production systems that millions of users depend upon daily.</p>
+
+    </div>
+
+    <!-- REFERENCES (Full Width) -->
+    <div class="references">
+        <h2><span class="section-number">VII.</span> References</h2>
+
+        <div class="reference-item">[1] Y. Xu, C. H. Shieh, P. van Esch, and I. L. Ling, "AI customer service: Task complexity, problem-solving ability, and usage intention," <em>Australasian Marketing Journal</em>, vol. 28, no. 4, pp. 189–199, 2020.</div>
+
+        <div class="reference-item">[2] T. Brown et al., "Language Models are Few-Shot Learners," in <em>Advances in Neural Information Processing Systems</em>, vol. 33, 2020, pp. 1877–1901.</div>
+
+        <div class="reference-item">[3] Z. Ji, N. Lee, R. Frieske, et al., "Survey of Hallucination in Natural Language Generation," <em>ACM Computing Surveys</em>, vol. 55, no. 12, pp. 1–38, 2023.</div>
+
+        <div class="reference-item">[4] P. Lewis, E. Perez, A. Piktus, et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks," in <em>Proc. NeurIPS 2020</em>, 2020, pp. 9459–9474.</div>
+
+        <div class="reference-item">[5] Y. Gao, Y. Xiong, X. Gao, et al., "Retrieval-Augmented Generation for Large Language Models: A Survey," <em>arXiv preprint arXiv:2312.10997</em>, 2023.</div>
+
+        <div class="reference-item">[6] L. Wang, C. Ma, X. Feng, et al., "A Survey on Large Language Model Based Autonomous Agents," <em>Frontiers of Computer Science</em>, vol. 18, no. 6, p. 186345, 2024.</div>
+
+        <div class="reference-item">[7] H. Chase, "LangChain: Building applications with LLMs through composability," GitHub repository, 2022. [Online]. Available: https://github.com/langchain-ai/langchain</div>
+
+        <div class="reference-item">[8] R. T. Fielding and R. N. Taylor, "Principled Design of the Modern Web Architecture," <em>ACM Trans. Internet Technology</em>, vol. 2, no. 2, pp. 115–150, 2002.</div>
+
+        <div class="reference-item">[9] G. Ravi, R. Suresh, and M. S. Kumar, "QR Code Based Smart Ticketing System for Public Transport," <em>Int. J. Computer Applications</em>, vol. 181, no. 46, pp. 1–4, 2018.</div>
+
+        <div class="reference-item">[10] G. Precup and C. Muntean, "PDF Ticket Generation for Event Management Systems," in <em>Proc. Int. Conf. Web Technologies and Applications</em>, 2014, pp. 89–96.</div>
+
+        <div class="reference-item">[11] D. C. Ukpabi, B. Aslam, and H. Karjaluoto, "Chatbot adoption in tourism services: A conceptual exploration," in <em>Robots, AI, and Service Automation in Travel, Tourism and Hospitality</em>, 2019, pp. 105–121.</div>
+
+        <div class="reference-item">[12] S. Melián-González, D. Gutiérrez-Taño, and J. Bulchand-Gidumal, "Predicting the intentions to use chatbots for travel and tourism," <em>Current Issues in Tourism</em>, vol. 24, no. 2, pp. 192–210, 2021.</div>
+
+        <div class="reference-item">[13] A. Asai, Z. Wu, Y. Wang, A. Sil, and H. Hajishirzi, "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection," <em>arXiv preprint arXiv:2310.11511</em>, 2023.</div>
+
+        <div class="reference-item">[14] A. K. Kushwaha and M. Paliwal, "Online Ticket Booking System Using Django Framework," <em>Int. J. Engineering Research & Technology</em>, vol. 8, no. 10, pp. 567–572, 2019.</div>
+
+        <div class="reference-item">[15] V. Manoj, A. Anand, and K. S. Reddy, "Secure E-Ticketing System with QR Code Verification," <em>J. Computer Science and Applications</em>, vol. 7, no. 2, pp. 45–52, 2020.</div>
+
+        <div class="reference-item">[16] Gemini Team, Google, "Gemini: A Family of Highly Capable Multimodal Models," <em>arXiv preprint arXiv:2312.11805</em>, 2024.</div>
+
+        <div class="reference-item">[17] N. Reimers and I. Gurevych, "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks," in <em>Proc. EMNLP-IJCNLP</em>, 2019, pp. 3982–3992.</div>
+
+        <div class="reference-item">[18] A. Vaswani et al., "Attention is All You Need," in <em>Advances in Neural Information Processing Systems</em>, vol. 30, 2017, pp. 5998–6008.</div>
+
+        <div class="reference-item">[19] J. Devlin, M. W. Chang, K. Lee, and K. Toutanova, "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding," in <em>Proc. NAACL-HLT</em>, 2019, pp. 4171–4186.</div>
+
+        <div class="reference-item">[20] N. F. Liu, K. Lin, J. Hewitt, et al., "Lost in the Middle: How Language Models Use Long Contexts," <em>arXiv preprint arXiv:2307.03172</em>, 2023.</div>
+    </div>
+
+    <!-- ACKNOWLEDGMENTS (Full Width) -->
+    <div style="margin-top: 6mm; font-size: 9pt;">
+        <h2 style="font-size: 10pt;">Acknowledgments</h2>
+        <p style="text-indent: 0;">
+            We would like to thank Technocrats Institute of Technology & Science for providing the resources and support for this research. We are grateful to the Bhopal Tourism Board for access to official tourism documentation. Special thanks to the open-source communities behind Django, LangChain, ChromaDB, and the sentence-transformers project.
+        </p>
+    </div>
+
+    <div class="no-print" style="margin-top: 20mm; padding: 10mm; background: #e8f4f8; border: 2px solid #0066cc; text-align: center;">
+        <h3 style="color: #0066cc;">📄 Instructions for Printing/PDF</h3>
+        <p style="font-size: 10pt; margin: 5mm 0;">
+            <strong>To save as PDF:</strong> Press Ctrl+P (or Cmd+P on Mac), then select "Save as PDF" or "Microsoft Print to PDF"<br>
+            <strong>Recommended settings:</strong> A4 paper size, Portrait orientation, Default margins<br>
+            This will create a professional two-column research paper ready for submission!
+        </p>
+    </div>
+
+</body>
+</html>

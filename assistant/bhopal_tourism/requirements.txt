@@ -1,0 +1,27 @@
+# Backend Core
+Django>=5.0.0
+djangorestframework>=3.14.0
+
+# Database
+django-cors-headers>=4.3.1
+
+# LangChain and Vector DB
+langchain-chroma>=0.1.0
+langchain-community>=0.0.20
+langchain-core>=0.1.25
+langchain-google-genai>=0.0.11
+langchain-huggingface>=0.0.10
+chromadb>=0.4.24
+
+# Machine Learning & Embeddings
+sentence-transformers>=2.5.1
+google-generativeai>=0.3.2
+
+# Utils
+python-dotenv>=1.0.1
+requests>=2.31.0
+urllib3>=2.1.0
+
+# For Azure Function Integration
+azure-functions>=1.18.0
+azure-communication-email>=1.0.0

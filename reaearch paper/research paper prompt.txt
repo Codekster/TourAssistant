@@ -1,0 +1,338 @@
+Here is a comprehensive, page-by-page prompt designed to guide an AI agent in generating your 7-page, double-column research paper.
+
+---
+
+**Master Prompt:**
+
+You are an expert academic writer and researcher. Your task is to generate a 7-page, double-column research paper based on the project description provided below. You must follow the page-by-page, column-by-column structure *exactly* as specified.
+
+The paper's format must be **two-column**.
+
+You must include all specified placeholders for figures and tables using the format `[PLACEHOLDER FOR FIGURE X: Description]` and `[PLACEHOLDER FOR TABLE X: Description]`. These placeholders should be inserted at the exact locations specified in the instructions.
+
+### **Project Description (Context)**
+
+* **Project Title:** AI-Powered Conversational Tourism Assistant for Bhopal.
+* **Core Technologies:** Retrieval-Augmented Generation (RAG), LangChain, Google Gemini API, Django REST Framework, Azure Functions.
+* **System Capabilities:**
+    1.  **Conversational Q&A (RAG):** The system answers tourist queries (e.g., "Tell me about Van Vihar," "What are the hours for the Tribal Museum?") using a RAG pipeline. A knowledge base of curated documents about Bhopal attractions is embedded and stored in a vector database. When a user asks a question, LangChain retrieves relevant document chunks and feeds them as context to the Gemini API. This ensures all answers are factually-grounded, accurate, and free from LLM hallucination.
+    2.  **AI-Driven Ticket Booking:** The system is an agent, not just a chatbot. Using LangChain, it detects the user's *intent*. If the user says, "I want to book a ticket," the system switches from Q&A to a transactional workflow. It conversationally generates a structured form (requesting Name, Email, Number of Persons, Date, etc.) directly in the chat interface.
+    3.  **PDF & QR Code Generation:** When the user submits the form, the Django REST Framework backend validates the data, creates a unique booking ID, and stores the details in a database. It then dynamically generates a PDF ticket containing all booking information and a unique QR code (which stores the booking ID for verification).
+    4.  **Instant Ticket Delivery:** The generated PDF ticket is *not* emailed. Instead, it is streamed from the Django backend to the frontend, triggering an automatic file download on the user's device for instant access.
+    5.  **Asynchronous Email Confirmation:** Simultaneously, the Django backend sends *only* the booking metadata (Name, Booking ID, Date, Place, etc.) to a serverless Azure Function. This Azure Function is responsible for sending a professional confirmation email to the user. This decouples the email-sending process, ensuring the user gets their PDF ticket instantly without waiting for the email API. The email *does not* contain the PDF attachment.
+* **System Architecture (4 Layers):**
+    * **A. Frontend (HTML/CSS/JS):** A "thin client" that provides the chat UI, renders the AI-generated form, and handles the auto-download of the PDF.
+    * **B. Backend (Django REST Framework):** The "brain" of the operation. It handles all business logic, API endpoints, RAG pipeline orchestration, database management, PDF/QR code generation, and makes the outbound request to the Azure Function.
+    * **C. AI Layer (RAG + Gemini + LangChain):** Manages document embedding, vector search, retrieval, LLM-based answer generation, intent classification, and multi-step conversational control.
+    * **D. Cloud Layer (Azure Function):** A decoupled, serverless microservice used *only* for sending confirmation emails, ensuring the main application remains fast and responsive.
+
+---
+
+### **Page-by-Page Generation Instructions**
+
+#### **PAGE 1: Title, Abstract, and Introduction**
+
+**[PAGE 1, COLUMN 1]**
+
+**Title: Bhopal-RAG: A Conversational AI Tourism Assistant with RAG-Grounded Q&A and Automated E-Ticketing**
+
+**Authors:**
+Abhishek Pandey, [Prof. Name 1], [Prof. Name 2]
+
+**Affiliation:**
+Department of Computer Science and Engineering, Technocrats Institute of Technology & Science, Bhopal, India
+[email addresses]
+
+---
+
+**Abstract**
+* **Context:** Start with the challenge tourists face: finding accurate, real-time information and navigating fragmented booking systems.
+* **Problem:** Generic LLMs (Large Language Models) are prone to "hallucination," providing incorrect information (e.g., wrong opening hours), which is a critical failure for a tourist. Furthermore, information and booking are rarely unified in a single, conversational interface.
+* **Solution:** We present an "AI-Powered Conversational Tourism Assistant for Bhopal," a novel system that provides a unified interface for both information retrieval and transactional e-ticketing.
+* **Methodology:** The system leverages a Retrieval-Augmented Generation (RAG) pipeline with the Gemini API and a curated vector database to provide factually-grounded, citation-based answers. This RAG pipeline is orchestrated by LangChain, which functions as an agent, classifying user intent to intelligently switch between Q&A and a conversational ticket-booking workflow.
+* **System:** The backend, built on Django REST Framework, manages the booking logic, dynamic PDF ticket and QR code generation, and database persistence. A decoupled Azure Function handles asynchronous email confirmations to ensure low-latency ticket delivery.
+* **Contribution:** Our work presents a complete, end-to-end, scalable architecture for a domain-specific conversational AI, demonstrating a practical solution to the 'hallucination' and 'fragmentation' problems in digital tourism.
+
+**Keywords**
+Conversational AI, Retrieval-Augmented Generation (RAG), LangChain, Gemini API, Tourism Chatbot, Automated Ticketing, Django, Azure Functions
+
+---
+
+**I. Introduction**
+* Begin by discussing the shift in tourism towards digital-first experiences. Tourists now expect instant, personalized, and accurate information.
+* Introduce the two primary problems this paper addresses:
+    1.  **The LLM "Hallucination" Problem:** Explain why generic AI chatbots are unreliable for tourism. A wrong answer about a museum's closing time or a location is not a minor inconvenience but a critical failure that can ruin a tourist's plan.
+    2.  **The "Fragmented" User Experience:** Describe the current friction. A user must find information on one app (e.g., Google Maps), verify it on another (e.g., the official website), and then navigate to a *third* application or clunky web portal to book a ticket.
+* Introduce our solution. "This paper proposes a unified, conversational assistant..."
+
+**[PAGE 1, COLUMN 2]**
+
+**I. Introduction (Continued)**
+* Explain the core concept: a single chat interface where a user can seamlessly transition from asking "What is the history of this place?" (an information-retrieval task) to "Book me two tickets for tomorrow" (a transactional task).
+* Briefly state the technical solution. "To achieve this, we integrate a RAG-based knowledge system for factual Q&A with an AI-driven agent (built with LangChain) that controls a full-stack Django backend for e-ticketing."
+* **Key Contributions:** (Use a numbered list)
+    1.  A novel system architecture integrating RAG, LLM agents (LangChain/Gemini), and a full-stack web backend (Django) for a real-world tourism application.
+    2.  An end-to-end, fully conversational e-ticketing workflow, from natural language intent detection to instant PDF/QR code delivery and decoupled email confirmation.
+    3.  A practical solution to LLM hallucination in a critical domain by enforcing factual grounding using a curated, domain-specific knowledge base.
+    4.  A modular and scalable design using a decoupled microservice (Azure Function) for asynchronous tasks, enhancing system performance and user experience.
+* **Paper Outline:** Conclude the introduction by outlining the rest of the paper. "Section II reviews related work... Section III details our system architecture... Section IV describes the core implementation... Section V presents our evaluation... and Section VI concludes the paper."
+
+---
+
+#### **PAGE 2: Related Work**
+
+**[PAGE 2, COLUMN 1]**
+
+**II. Related Work**
+* This section will review existing literature to highlight the gap our project fills.
+* **A. Conversational AI in Tourism:**
+    * Discuss early rule-based chatbots (e.g., for airlines, hotels). Note their limitations: rigidity, inability to handle complex queries, and high maintenance.
+    * Discuss modern LLM-based chatbots. Acknowledge their conversational fluency but emphasize their key weaknesses: "hallucination," lack of domain-specific knowledge, and inability to perform real-world actions (i.e., they are not "grounded" in reality or connected to transactional systems).
+* **B. Retrieval-Augmented Generation (RAG):**
+    * Define RAG. Explain that it combines the generative power of LLMs with the factual precision of a retrieval system.
+    * Cite key papers in this area.
+    * Explain *why* RAG is the ideal solution for this domain. It "forces" the LLM to base its answers on a trusted, curated knowledge base (our Bhopal tourism documents), effectively eliminating hallucinations and providing citable, accurate information.
+
+**[PAGE 2, COLUMN 2]**
+
+**II. Related Work (Continued)**
+* **C. LLM Agents and Orchestration:**
+    * Define an "LLM Agent." Distinguish it from a simple chatbot. An agent can reason, make decisions, and use "tools."
+    * Discuss the role of frameworks like **LangChain**. Explain that LangChain is the "orchestrator" that allows us to build complex, multi-step chains. In our project, it's used for:
+        1.  The RAG pipeline itself (Retrieve, then Generate).
+        2.  **Intent Classification:** Deciding if the user is asking a question (route to RAG) or trying to book (route to booking workflow).
+        3.  **Tool Use:** (Conceptually) allowing the LLM to call our booking API.
+* **D. E-Ticketing and Backend Systems:**
+    * Briefly review modern web architectures for transactional systems.
+    * Mention the industry-standard use of REST APIs, QR codes for digital verification, and PDF generation.
+* **E. Research Gap:**
+    * Conclude this section by summarizing the gap. "While many studies have focused on *either* tourism chatbots, RAG for Q&A, *or* e-ticketing systems, few (if any) have presented a *unified, end-to-end system* that integrates all three. Our work bridges this gap by presenting a complete architecture where a RAG-grounded, agentic LLM seamlessly controls a full-stack transactional backend."
+
+---
+
+#### **PAGE 3: System Architecture**
+
+**[PAGE 3, COLUMN 1]**
+
+**III. System Architecture**
+* This section describes the "what" and "where" of our system components.
+
+**A. Architectural Overview**
+* Introduce the system as a 4-Layer modular architecture. This design promotes separation of concerns, scalability, and maintainability.
+* List the four layers:
+    1.  **Frontend (Client Layer)**
+    2.  **Backend (Application Logic Layer)**
+    3.  **AI Layer (Intelligence Layer)**
+    4.  **Cloud Layer (Services Layer)**
+* Explain that the **Backend (Django)** acts as the central hub, orchestrating communication between all other layers.
+
+**B. High-Level Architecture Diagram**
+* Insert the main architecture diagram here.
+
+`[PLACEHOLDER FOR FIGURE 1: HIGH-LEVEL SYSTEM ARCHITECTURE]`
+*(A large, clear diagram showing the four layers. Arrows must show the flow for both Q&A and Booking:
+1.  **Q&A Flow:** User -> Frontend -> Django API -> AI Layer (LangChain RAG) -> Gemini API -> Django -> Frontend -> User.
+2.  **Booking Flow:** User -> Frontend -> Django API -> AI Layer (LangChain Intent) -> Django (Booking Logic) -> DB.
+3.  **Ticket Flow:** Django -> PDF/QR Gen -> Frontend (Download).
+4.  **Email Flow:** Django -> Azure Function -> User Email.)*
+
+**[PAGE 3, COLUMN 2]**
+
+**C. Component Description**
+* **1. Frontend Layer (HTML/CSS/JS):**
+    * Describe this as a "thin client." Its primary responsibilities are:
+        * Rendering the chat interface.
+        * Displaying the structured form generated by the AI for booking.
+        * Making API calls to the Django backend.
+        * Handling the automatic file-download stream for the PDF ticket.
+* **2. Backend Layer (Django REST Framework):**
+    * The "central nervous system" of the project.
+    * **API Endpoints:** Hosts RESTful APIs (e.g., `/api/chat`, `/api/book`) for the frontend.
+    * **Business Logic:** Handles all data validation (for booking forms), session management, and database interactions.
+    * **Orchestration:** Initiates calls to the AI Layer (LangChain).
+    * **Generation:** Contains the modules for PDF and QR code generation.
+    * **Database:** Manages the booking database (e.g., models for `Booking`, `Visitor`).
+* **3. AI Layer (RAG + LangChain + Gemini):**
+    * This is the "intelligence" of the system, co-located with or called by Django.
+    * **Knowledge Base:** The vector store (e.g., FAISS/ChromaDB) containing embeddings of Bhopal tourism documents.
+    * **LangChain Orchestrator:** Manages the end-to-end logic for both RAG and agentic behavior.
+    * **Gemini API:** The underlying LLM used for final answer generation.
+* **4. Cloud Layer (Azure Function):**
+    * A **decoupled microservice**.
+    * Explain *why* this is critical: Email sending can be slow or fail. By offloading it to a serverless function, the Django backend can *immediately* confirm the booking and send the PDF to the user (low latency) without waiting for the email to be sent.
+    * It receives a simple JSON payload (booking details) from Django and handles the email logic independently.
+
+---
+
+#### **PAGE 4: Core Functionalities: Implementation**
+
+**[PAGE 4, COLUMN 1]**
+
+**IV. Core Functionalities: Implementation**
+* This section details the "how" of the project.
+
+**A. The RAG-based Q&A Pipeline**
+* This is the implementation of the primary "information retrieval" task.
+* **1. Data Ingestion & Embedding:**
+    * Describe the process of creating the knowledge base. "We collected X documents (.pdf, .txt, web pages) from official tourism sites..."
+    * **Chunking:** Explain that these documents are split into smaller, semantically-related chunks (e.g., using a `RecursiveCharacterTextSplitter`).
+    * **Embedding:** These chunks are then converted into vector embeddings using a model (e.g., `sentence-transformers`) and stored in a vector database.
+* **2. RAG Workflow (at query time):**
+    * Describe the step-by-step flow when a user asks a question.
+
+**[PAGE 4, COLUMN 2]**
+
+**2. RAG Workflow (Continued)**
+* Insert the RAG workflow diagram.
+
+`[PLACEHOLDER FOR FIGURE 2: RAG Q&A WORKFLOW]`
+*(A flowchart:
+1.  User Query ("When is Van Vihar closed?")
+2.  Query Embedding
+3.  Vector DB Search (similarity search)
+4.  Retrieve Relevant Chunks (e.g., "Van Vihar is closed on Fridays...")
+5.  Formulate Prompt (Context + Query)
+6.  Send to Gemini API
+7.  Gemini Generates Answer ("Van Vihar is closed on Fridays.")
+8.  Answer returned to user.)*
+
+* **3. Prompt Engineering for Grounding:**
+    * This is crucial. Show the prompt template used to *force* the LLM to use the provided context.
+    > **Prompt Template Example:**
+    > "You are a helpful tourism assistant for Bhopal. Use the following context *only* to answer the user's question. If the answer is not in the context, state 'I am sorry, I do not have that information.' Do not make up any information.
+    >
+    > **Context:**
+    > {retrieved_chunks}
+    >
+    > **User Question:**
+    > {user_question}
+    >
+    > **Answer:**"
+
+---
+
+#### **PAGE 5: Core Functionalities: Booking & Ticketing**
+
+**[PAGE 5, COLUMN 1]**
+
+**B. AI-Driven Ticket Booking Workflow**
+* This is the implementation of the "transactional" task.
+* **1. Intent Classification:**
+    * Explain how LangChain is used as an "agent" or "router."
+    * When a user's query is received (e.g., "I want to book a ticket"), the LangChain agent classifies this intent *not* as a Q&A, but as a "booking request."
+* **2. Conversational Form Generation:**
+    * Upon detecting the "booking" intent, the system switches its "tool."
+    * It responds to the user by programmatically generating a structured form (which the frontend renders) asking for all required details (Name, Email, Persons, Date).
+* **3. Backend Processing (Django):**
+    * Once the user fills and submits the form, the data is sent to the `/api/book` endpoint.
+    * The Django backend performs:
+        * **Validation:** Ensures all fields are correct (e.g., valid email, date is in the future).
+        * **Database Storage:** Creates a new `Booking` entry with a unique `booking_id`.
+
+**[PAGE 5, COLUMN 2]**
+
+**C. PDF & QR Code Generation**
+* **1. Dynamic PDF Creation:**
+    * After the booking is saved, the backend service (e.g., using a library like `ReportLab` in Python) generates a PDF ticket *in-memory*.
+    * This PDF is populated with all the booking details from the database.
+* **2. QR Code Integration:**
+    * During PDF generation, a QR code is also generated (e.g., using the `qrcode` library).
+    * The content of the QR code is *only* the unique `booking_id`. Explain that this is secure and efficient; a scanner at the venue can read this ID and query the database to pull up the full booking details for verification.
+* **3. Instant Client-Side Delivery:**
+    * The generated PDF is returned from the Django API as a file stream (`application/pdf`).
+    * The frontend client receives this stream and triggers an automatic download. This provides the user with their ticket *instantly*.
+
+`[PLACEHOLDER FOR FIGURE 3: PDF TICKET MOCKUP]`
+*(A small image showing a sample generated PDF ticket. It should have fields for "Bhopal Tourism," "Visitor: [Name]," "Date: [Date]," "Persons: [X]," and a sample QR code.)*
+
+**D. Asynchronous Email Confirmation**
+* Reiterate the importance of this design choice for user experience.
+* **1. Decoupled Request:** Immediately after initiating the PDF download, the Django backend makes a *separate, asynchronous* call to the Azure Function's HTTP trigger.
+* **2. JSON Payload:** The payload sent is lightweight JSON, e.g.:
+    `{ "email": "user@email.com", "name": "Abhishek", "booking_id": "BK123", "date": "2025-11-17" }`
+* **3. Azure Function:** This serverless function receives the JSON, formats a professional "Thank You" email with the booking details, and sends it. The user receives this email seconds *after* they have already received their PDF ticket, ensuring the critical ticket-delivery step is not blocked by email latency.
+
+---
+
+#### **PAGE 6: Evaluation & Results**
+
+**[PAGE 6, COLUMN 1]**
+
+**V. Evaluation and Results**
+* This section validates the claims made by the paper.
+* **A. Evaluation of Q&A Groundedness (Anti-Hallucination):**
+    * **Objective:** To prove that our RAG-based system is factually accurate and superior to a generic, non-RAG LLM.
+    * **Methodology:**
+        1.  We created a "test set" of 20 factual questions about Bhopal tourism (e.g., "What is the entry fee for the Tribal Museum?", "Is Van Vihar closed on Fridays?", "What is the main attraction at Bharat Bhavan?").
+        2.  We asked these 20 questions to two systems:
+            * **Baseline:** The standard Google Gemini API (without RAG).
+            * **Our System:** Our RAG-pipeline with the Gemini API.
+    * **Results:** We manually evaluated the answers for factual accuracy.
+
+`[PLACEHOLDER FOR TABLE 1: Q&A GROUNDEDNESS COMPARISON]`
+*(A table with columns:
+* **Question:** (e.g., "Is Van Vihar closed on Fridays?")
+* **Baseline (No RAG) Answer:** (e.g., "Van Vihar National Park is generally open... it's best to check locally.")
+* **Our (RAG) Answer:** (e.g., "Yes, Van Vihar National Park is closed on Fridays.")
+* **Factual?** (Show Y/N for both)
+* **Summary:** The baseline model was correct 12/20 times and "hallucinated" or gave non-committal answers 8/20 times. Our RAG system was 100% factually correct based on its knowledge base.)*
+
+**[PAGE 6, COLUMN 2]**
+
+**B. System Performance (Latency)**
+* **Objective:** To demonstrate the system is responsive.
+* **Methodology:** We measured the end-to-end response time for the two main tasks over 100 requests.
+
+`[PLACEHOLDER FOR TABLE 2: SYSTEM LATENCY (Average)]`
+*(A simple table with rows and columns:
+* **Task:** RAG Q&A Response
+* **Average Latency:** (e.g., ~2.4 seconds)
+* **Task:** Ticket Booking (Form Submit to PDF Download)
+* **Average Latency:** (e.g., ~1.3 seconds)
+* Note: The email confirmation (e.g., ~3.5s) is *not* included in the booking latency because it's asynchronous, which is the point.)*
+
+**C. Qualitative Results (Example Conversation)**
+* Showcase a full, end-to-end user journey.
+
+`[PLACEHOLDER FOR FIGURE 4: EXAMPLE CONVERSATION FLOW]`
+*(A screenshot or mockup of the chat UI showing this exact flow:
+1.  **User:** "Tell me about Van Vihar National Park."
+2.  **Bot:** "Van Vihar National Park is a... It is open from 6:00 AM to 7:00 PM and is closed on Fridays. [Source: van_vihar_guide.pdf]"
+3.  **User:** "Great! I want to book 2 tickets for tomorrow."
+4.  **Bot:** "Okay! I can help with that. Please provide the following details:"
+5.  **Bot:** [Renders the structured form: Name, Email, Persons=2, Date=Tomorrow]
+6.  (User fills and clicks "Submit")
+7.  **Bot:** "Your booking is confirmed! Your PDF ticket is downloading now. You will also receive a confirmation email shortly."
+)*
+
+---
+
+#### **PAGE 7: Conclusion & References**
+
+**[PAGE 7, COLUMN 1]**
+
+**VI. Conclusion and Future Work**
+
+**A. Conclusion**
+* Summarize the paper. "We have successfully designed, implemented, and evaluated a novel AI-Powered Conversational Tourism Assistant."
+* Restate the main achievement: "By successfully integrating a RAG-based Q&A pipeline (to combat hallucination) with an agentic, transactional e-ticketing system (to provide utility), our work presents a significant step towards truly useful and reliable domain-specific AI assistants."
+* Reiterate that the system's modular architecture (Django, LangChain, Azure) is scalable, maintainable, and provides a superior user experience by prioritizing low-latency delivery of the critical asset (the PDF ticket).
+
+**B. Future Work**
+* Suggest potential improvements:
+    * **Multi-lingual Support:** Adding support for Hindi and other regional languages.
+    * **Multi-modal Input:** Allowing users to upload images (e.g., "What building is this?") for identification.
+    * **Proactive Suggestions:** Training the agent to be proactive (e.g., "You asked about Van Vihar. It's nearby the Tribal Museum. Would you like to book tickets for both?").
+    * **Deeper Integration:** Connecting to third-party APIs for real-time hotel, flight, or restaurant bookings, making it a complete travel agent.
+
+**[PAGE 7, COLUMN 2]**
+
+**VII. References**
+* [1] Lewis, P., et al. (2020). "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks."
+* [2] Vaswani, A., et al. (2017). "Attention Is All You Need."
+* [3] (Cite the Google Gemini technical report)
+* [4] (Cite the LangChain documentation or paper)
+* [5] (Cite the Django documentation)
+* [6] (Cite other "chatbot for tourism" papers you found in your related work search)
+* [7] (Cite papers on PDF/QR code systems)
+* [8] ... (Continue list)

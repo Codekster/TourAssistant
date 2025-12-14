@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    
+    "ACS_CONNECTION_STRING": "your_azure_communication_services_connection_string",
+    "ACS_SENDER_EMAIL": "your_sender_email@azurecomm.net"
+  }
+}

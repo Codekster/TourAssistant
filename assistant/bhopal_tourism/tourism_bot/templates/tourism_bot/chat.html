@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderAI - Bhopal Tourism Assistant</title>
+    
+    <!-- Load Django static files -->
+    {% load static %}
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- jsPDF for client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- QR Code generation library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .pulse-slow {
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .gentle-float {
+            animation: gentleFloat 6s ease-in-out infinite;
+        }
+
+        /* Background Circles */
+        .bg-circle-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            opacity: 0.05;
+        }
+
+        .bg-circle-teal {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            opacity: 0.05;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Message animations */
+        .message-slide-in {
+            animation: fadeInUp 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 overflow-hidden">
+    <!-- CSRF Token for AJAX requests -->
+    {% csrf_token %}
+    
+    <!-- Background Decorative Circles -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="bg-circle-blue gentle-float absolute -top-32 -left-32 w-64 h-64 rounded-full"></div>
+        <div class="bg-circle-teal gentle-float absolute -bottom-32 -right-32 w-80 h-80 rounded-full" style="animation-delay: -3s;"></div>
+        <div class="bg-circle-blue gentle-float absolute top-1/2 left-1/4 w-32 h-32 rounded-full" style="animation-delay: -1.5s;"></div>
+    </div>
+
+    <div class="flex flex-col h-screen relative z-10">
+        <!-- Chat Header -->
+        <div class="bg-white/90 backdrop-blur-sm border-b border-slate-200 px-6 py-4 shadow-sm">
+            <div class="max-w-4xl mx-auto flex items-center justify-between">
+                <!-- Logo and Title -->
+                <div class="flex items-center space-x-4">
+                    <div class="text-2xl font-bold text-slate-900">WanderAI</div>
+                    <div class="hidden md:block h-6 w-px bg-slate-300"></div>
+                    <div class="hidden md:block">
+                        <h1 class="text-lg font-semibold text-slate-900">Bhopal Tourism Assistant</h1>
+                        <p class="text-sm text-slate-600">Your AI guide to the City of Lakes 🏛️</p>
+                    </div>
+                </div>
+                
+                <!-- User Info and Logout -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-2 text-sm text-slate-600">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-semibold">👤</span>
+                        </div>
+                        <span class="font-medium">Welcome!</span>
+                    </div>
+                    <button id="logoutBtn" class="text-slate-500 hover:text-red-600 transition-colors duration-200 p-2 rounded-lg hover:bg-red-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Messages Area -->
+        <div class="flex-1 overflow-hidden">
+            <div class="h-full max-w-4xl mx-auto px-6">
+                <div id="chatMessages" class="h-full overflow-y-auto py-6 space-y-4">
+                    <!-- Welcome Message -->
+                    <div class="flex justify-center mb-8">
+                        <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-sm border border-slate-200 max-w-md text-center">
+                            <div class="text-3xl mb-2">🏛️</div>
+                            <h3 class="font-semibold text-slate-900 mb-1">Welcome to Bhopal!</h3>
+                            <p class="text-sm text-slate-600">Ask me anything about the City of Lakes - attractions, hotels, restaurants, or booking tickets!</p>
+                        </div>
+                    </div>
+                    <!-- Messages will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="bg-white/90 backdrop-blur-sm border-t border-slate-200 px-6 py-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            id="userInput" 
+                            placeholder="Ask me about places to visit in Bhopal..." 
+                            autocomplete="off"
+                            class="w-full px-6 py-4 bg-white border border-slate-300 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-slate-700 placeholder-slate-400 pr-12"
+                        >
+                        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <button id="sendButton" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-full font-semibold transition-all duration-200 shadow-sm hover:shadow-md flex items-center space-x-2 pulse-slow">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Send</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Booking Form Modal -->
+    <div id="bookingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden shadow-2xl">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-2xl">🎫</div>
+                        <div>
+                            <h2 class="text-2xl font-bold">Book Your Tickets</h2>
+                            <p class="text-blue-100 text-sm">Secure your spot at Bhopal's attractions</p>
+                        </div>
+                    </div>
+                    <button id="closeBooking" class="text-white hover:text-blue-200 transition-colors p-2 rounded-lg hover:bg-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="p-8 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <form id="bookingForm" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="name" class="block text-sm font-semibold text-slate-700">Full Name *</label>
+                            <input type="text" id="name" name="name" required 
+                                   class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="email" class="block text-sm font-semibold text-slate-700">Email Address *</label>
+                            <input type="email" id="email" name="email" required 
+                                   class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="phone" class="block text-sm font-semibold text-slate-700">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required 
+                                   class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="attraction" class="block text-sm font-semibold text-slate-700">Select Attraction *</label>
+                            <select id="attraction" name="attraction" required 
+                                    class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white">
+                                <option value="">Choose your destination</option>
+                                <option value="Upper Lake">🏞️ Upper Lake (Bhojtal)</option>
+                                <option value="Taj-ul-Masajid">🕌 Taj-ul-Masajid</option>
+                                <option value="Sanchi Stupa">🏛️ Sanchi Stupa</option>
+                                <option value="Bhimbetka">🎨 Bhimbetka Rock Shelters</option>
+                                <option value="Van Vihar">🦁 Van Vihar National Park</option>
+                                <option value="Regional Science Centre">🔬 Regional Science Centre</option>
+                                <option value="Bharat Bhavan">🎭 Bharat Bhavan</option>
+                                <option value="Lower Lake">💧 Lower Lake</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="visit_date" class="block text-sm font-semibold text-slate-700">Visit Date *</label>
+                            <input type="date" id="visit_date" name="visit_date" required 
+                                   class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="num_tickets" class="block text-sm font-semibold text-slate-700">Number of Tickets *</label>
+                            <select id="num_tickets" name="num_tickets" required 
+                                    class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white">
+                                <option value="1">1 Ticket</option>
+                                <option value="2">2 Tickets</option>
+                                <option value="3">3 Tickets</option>
+                                <option value="4">4 Tickets</option>
+                                <option value="5">5 Tickets</option>
+                                <option value="6">6 Tickets</option>
+                                <option value="7">7 Tickets</option>
+                                <option value="8">8 Tickets</option>
+                                <option value="9">9 Tickets</option>
+                                <option value="10">10 Tickets</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Information -->
+                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div class="flex justify-between items-center text-sm text-slate-600 mb-2">
+                            <span>Price per ticket:</span>
+                            <span class="font-semibold">₹50</span>
+                        </div>
+                        <div class="flex justify-between items-center text-lg font-bold text-slate-900">
+                            <span>Total Amount:</span>
+                            <span id="totalAmount" class="text-blue-600">₹50</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="submit" 
+                                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
+                            🎫 Book Now & Get QR Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="{% static 'tourism_bot/js/chat_new.js' %}?v=4.0"></script>
+</body>
+</html>
